@@ -1,0 +1,21 @@
+require:
+  - rubocop-rake
+  - rubocop-rspec
+  - rubocop-performance
+
+AllCops:
+  Exclude:
+    - "bin/**/*"
+    - "vendor/**/*"
+  NewCops: enable
+  TargetRubyVersion: 2.4
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*_spec.rb
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

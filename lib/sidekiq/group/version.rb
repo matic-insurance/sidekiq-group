@@ -1,0 +1,5 @@
+module Sidekiq
+  module Group
+    VERSION = '0.1.0'.freeze
+  end
+end
