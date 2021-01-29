@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Matic developers']
   spec.email         = %w[yuriy.l@matic.com oleh.m@matic.com viktoriia.b@matic.com]
 
-  spec.summary       = 'An addon for Sidekiq that provides master-slave functionality'
-  spec.description   = 'An addon for Sidekiq that provides master-slave functionality'
+  spec.summary       = 'Addon for Sidekiq that provides similar functionality to Pro version Batches feature'
+  spec.description   = 'Allows to group jobs into a set and follow their progress'
   spec.homepage      = 'https://github.com/matic-insurance/sidekiq-group'
   spec.license       = 'MIT'
 
