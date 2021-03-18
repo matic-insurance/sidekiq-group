@@ -1,8 +1,5 @@
 # Sidekiq::Group
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sidekiq/group`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Addon for Sidekiq that provides similar functionality to Pro version Batches feature. Allows to group jobs into a set and follow their progress
 
 ## Installation
 
@@ -22,7 +19,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+class ImportBatchWorker
+  include Sidekiq::Worker
+  include Sidekiq::Group
+
+  def on_complete(options)
+    Import.find(options['import_id']).done!
+  end
+
+  def perform(import_id)
+    import = Report.find(import_id)
+
+    sidekiq_group(import_id: import.id) do |group|
+      import.rows.each do |import_row|
+        group.add(ImportWorker.perform_async(import_row.id))
+      end
+    end
+  end
+end
+```
 
 ## Development
 
