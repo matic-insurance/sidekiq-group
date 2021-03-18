@@ -1,4 +1,4 @@
-name: sidekiq-group
+name: quality gates
 
 on:
   push:
