@@ -1,0 +1,8 @@
+# https://github.com/mbj/mutant/blob/master/docs/configuration.md
+integration: rspec
+includes:
+  - lib
+requires:
+  - sidekiq
+  - sidekiq/group
+fail_fast: true
