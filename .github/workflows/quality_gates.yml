@@ -18,7 +18,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.4.0
+          ruby-version: 2.5.0
           bundler: Gemfile.lock
       - name: Cache dependencies
         uses: actions/cache@v1
@@ -44,7 +44,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.4.0
+          ruby-version: 2.5.0
           bundler: Gemfile.lock
       - name: Cache dependencies
         uses: actions/cache@v1
