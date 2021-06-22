@@ -10,7 +10,7 @@ module Sidekiq
     def sidekiq_group(options = {})
       raise NoBlockGivenError unless block_given?
 
-      group = Sidekiq::Group::Collection.new
+      group = Collection.new
       group.callback_class = self.class.name
       group.callback_options = options
 
@@ -23,12 +23,12 @@ module Sidekiq
       Thread.current[:group_collection] = nil
     end
 
-    def on_complete(_options = {})
+    def on_complete(_options)
       sidekiq_logger.warn 'on_complete function is not defined'
     end
 
     def sidekiq_logger
-      Sidekiq::Logging.logger
+      Logging.logger
     end
   end
 end
