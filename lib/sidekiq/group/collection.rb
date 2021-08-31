@@ -24,6 +24,8 @@ module Sidekiq
       end
 
       def add(jid)
+        Sidekiq::Logging.logger.info "Scheduling child job #{jid}" if Sidekiq::Group.debug
+
         Sidekiq.redis do |r|
           r.multi do
             r.sadd("#{@cid}-jids", jid)
@@ -44,6 +46,8 @@ module Sidekiq
 
         callback_class, callback_options = callback_data
         options = JSON(callback_options)
+
+        Sidekiq::Logging.logger.info "Scheduling callback job #{callback_class} with #{options}" if Sidekiq::Group.debug
         Sidekiq::Group::Worker.perform_async(callback_class, options)
 
         cleanup_redis
@@ -52,6 +56,8 @@ module Sidekiq
       private
 
       def remove_processed(jid)
+        Sidekiq::Logging.logger.info "Child job #{jid} completed" if Sidekiq::Group.debug
+
         Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
       end
 
@@ -60,6 +66,8 @@ module Sidekiq
       end
 
       def processed_all_jobs?
+        Sidekiq::Logging.logger.info "Pending jobs: #{pending}" if Sidekiq::Group.debug
+
         spawned_all_jobs? && pending.zero?
       end
 
