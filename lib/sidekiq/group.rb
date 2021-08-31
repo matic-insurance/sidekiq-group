@@ -7,6 +7,10 @@ module Sidekiq
   module Group
     class NoBlockGivenError < StandardError; end
 
+    class << self
+      attr_accessor :debug
+    end
+
     def sidekiq_group(options = {})
       raise NoBlockGivenError unless block_given?
 
