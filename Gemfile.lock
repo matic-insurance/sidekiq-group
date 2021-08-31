@@ -8,21 +8,20 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (6.1.4.1)
+    activesupport (5.2.4.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (>= 1.6, < 2)
-      minitest (>= 5.1)
-      tzinfo (~> 2.0)
-      zeitwerk (~> 2.3)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
     ast (2.4.1)
-    concurrent-ruby (1.1.9)
-    connection_pool (2.2.5)
+    concurrent-ruby (1.1.7)
+    connection_pool (2.2.3)
     diff-lcs (1.4.4)
     fakeredis (0.8.0)
       redis (~> 4.1)
-    i18n (1.8.10)
+    i18n (1.8.7)
       concurrent-ruby (~> 1.0)
-    minitest (5.14.4)
+    minitest (5.14.3)
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
@@ -72,10 +71,10 @@ GEM
       rack (< 2.1.0)
       rack-protection (>= 1.5.0)
       redis (>= 3.3.5, < 5)
-    tzinfo (2.0.4)
-      concurrent-ruby (~> 1.0)
+    thread_safe (0.3.6)
+    tzinfo (1.2.7)
+      thread_safe (~> 0.1)
     unicode-display_width (2.0.0)
-    zeitwerk (2.4.2)
 
 PLATFORMS
   ruby
