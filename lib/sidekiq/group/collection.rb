@@ -58,13 +58,11 @@ module Sidekiq
       def remove_processed(jid)
         Sidekiq::Logging.logger.info "Child job #{jid} completed" if Sidekiq::Group.debug
 
-        unless Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
-          Sidekiq::Logging.logger.info "Could not remove child job #{jid} from Redis" if Sidekiq::Group.debug
+        return if Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
 
-          sleep 1
-
-          Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
-        end
+        Sidekiq::Logging.logger.info "Could not remove child job #{jid} from Redis" if Sidekiq::Group.debug
+        sleep 1
+        Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
       end
 
       def pending
