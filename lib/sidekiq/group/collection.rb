@@ -24,7 +24,7 @@ module Sidekiq
       end
 
       def add(jid)
-        Sidekiq::Logging.logger.info "Scheduling child job #{jid}" if Sidekiq::Group.debug
+        Sidekiq::Logging.logger.info "Scheduling child job #{jid} for parent #{@cid}" if Sidekiq::Group.debug
 
         Sidekiq.redis do |r|
           r.multi do
@@ -58,11 +58,17 @@ module Sidekiq
       def remove_processed(jid)
         Sidekiq::Logging.logger.info "Child job #{jid} completed" if Sidekiq::Group.debug
 
-        Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
+        unless Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
+          Sidekiq::Logging.logger.info "Could not remove child job #{jid} from Redis" if Sidekiq::Group.debug
+
+          sleep 1
+
+          Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
+        end
       end
 
       def pending
-        Sidekiq.redis { |r| r.scard("#{@cid}-jids") }
+        @pending ||= Sidekiq.redis { |r| r.scard("#{@cid}-jids") }
       end
 
       def processed_all_jobs?
