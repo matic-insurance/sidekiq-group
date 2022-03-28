@@ -12,11 +12,6 @@ jobs:
       - checkout
       - ruby/install-deps
       - run:
-          name: Install deps
-          command: |
-            bundle config path ~/.bundle
-            bundle install --jobs 4 --retry 3
-      - run:
           name: Run rubocop
           command: bundle exec rubocop --parallel
 
@@ -26,11 +21,6 @@ jobs:
     steps:
       - checkout
       - ruby/install-deps
-      - run:
-          name: Install deps
-          command: |
-            bundle config path ~/.bundle
-            bundle install --jobs 4 --retry 3
       - run:
           name: Run rspec
           command: bundle exec rspec
