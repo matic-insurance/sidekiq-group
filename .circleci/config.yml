@@ -96,3 +96,4 @@ workflows:
               ignore: /.*/
             tags: 
               only: /\d\.\d\.\d/
+              
