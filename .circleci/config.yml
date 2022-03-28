@@ -57,37 +57,20 @@ jobs:
 workflows:
   version: 2
 
-  sidekiq-group.build-pull-request:
-    when:
-      not:
-        equal: [ master, << pipeline.git.branch >> ]
-    
+  sidekiq-group.build:
     jobs:
-      
+
       - robocop:
           name: Robocop Test
           context: global
 
-      - rspec-test:
-          name: RSpec Test
-          context: global
-
-  sidekiq-group.build-master:
-    when:
-      equal: [ master, << pipeline.git.branch >> ]
-    
-    jobs:
-      
-      - robocop:
-          name: Robocop Test
-          context: global
-          
       - rspec-test:
           name: RSpec Test
           context: global
 
   release:
     jobs:
+
       - release-gem:
           tag: << pipeline.git.tag >>
           context: gem-publishing
