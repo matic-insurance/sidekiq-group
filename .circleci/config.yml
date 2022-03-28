@@ -22,7 +22,7 @@ jobs:
 
   rspec-test:
     docker:
-      - image: cimg/ruby:2.4.0
+      - image: cimg/ruby:2.6.2
     steps:
       - checkout
       - ruby/install-deps
@@ -34,14 +34,14 @@ jobs:
       - run:
           name: Run rspec
           command: bundle exec rspec
-          
+
   release-gem:
     parameters:
       tag:
         type: string
         default: "default-tag"
     docker:
-      - image: cimg/ruby:2.4.0
+      - image: cimg/ruby:2.6.2
     environment:
       RELEASE_TAG: << parameters.tag >>
     steps:
