@@ -78,5 +78,5 @@ workflows:
             branches:
               ignore: /.*/
             tags: 
-              only: /\d\.\d\.\d/
+              only: /\d\.\d\.\d/ # It should be [digin dot digit dot digit] format
               
