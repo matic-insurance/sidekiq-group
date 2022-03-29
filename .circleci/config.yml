@@ -7,7 +7,7 @@ jobs:
   
   robocop:
     docker:
-      - image: cimg/ruby:2.6.2
+      - image: cimg/ruby:2.6.6
     steps:
       - checkout
       - ruby/install-deps
