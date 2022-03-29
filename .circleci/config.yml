@@ -25,7 +25,7 @@ jobs:
           name: Run rspec
           command: bundle exec rspec
 
-  release-gem:
+  release:
     parameters:
       tag:
         type: string
@@ -68,10 +68,10 @@ workflows:
           name: RSpec Test
           context: global
 
-  release:
+  sidekiq-group.release:
     jobs:
 
-      - release-gem:
+      - release:
           tag: << pipeline.git.tag >>
           context: gem-publishing
           filters:
