@@ -62,11 +62,9 @@ workflows:
 
       - rubocop:
           name: Rubocop Test
-          context: global
 
       - rspec-test:
           name: RSpec Test
-          context: global
 
   sidekiq-group.release:
     jobs:
