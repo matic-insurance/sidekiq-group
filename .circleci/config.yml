@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   
-  robocop:
+  rubocop:
     docker:
       - image: cimg/ruby:2.6.6
     steps:
@@ -60,8 +60,8 @@ workflows:
   sidekiq-group.build:
     jobs:
 
-      - robocop:
-          name: Robocop Test
+      - rubocop:
+          name: Rubocop Test
           context: global
 
       - rspec-test:
