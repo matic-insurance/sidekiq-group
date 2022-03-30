@@ -1,0 +1,80 @@
+version: 2.1
+
+orbs:
+  ruby: circleci/ruby@1.4.0
+
+jobs:
+  
+  rubocop:
+    docker:
+      - image: cimg/ruby:2.6.6
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Run rubocop
+          command: bundle exec rubocop --parallel
+
+  rspec-test:
+    docker:
+      - image: cimg/ruby:2.6.6
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Run rspec
+          command: bundle exec rspec
+
+  release:
+    parameters:
+      tag:
+        type: string
+        default: "default-tag"
+    docker:
+      - image: cimg/ruby:2.6.6
+    environment:
+      RELEASE_TAG: << parameters.tag >>
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Set up credentials
+          command: |
+              mkdir -p $HOME/.gem
+              touch $HOME/.gem/credentials
+              chmod 0600 $HOME/.gem/credentials
+              printf -- "---\n:rubygems_api_key: $RUBYGEMS_API_KEY\n" > $HOME/.gem/credentials
+      - run: 
+          name: Set version
+          command: sed -i "s/[[:digit:]].[[:digit:]].[[:digit:]]/${RELEASE_TAG}/g" $(find . -name "version.rb")   
+      - run:
+          name: Build gem
+          command: gem build *.gemspec
+      - run:
+          name: Push gem
+          command: gem push *.gem
+
+workflows:
+  version: 2
+
+  sidekiq-group.build:
+    jobs:
+
+      - rubocop:
+          name: Rubocop Test
+
+      - rspec-test:
+          name: RSpec Test
+
+  sidekiq-group.release:
+    jobs:
+
+      - release:
+          tag: << pipeline.git.tag >>
+          context: gem-publishing
+          filters:
+            branches:
+              ignore: /.*/
+            tags: 
+              only: /\d\.\d\.\d/ # It should be [digin dot digit dot digit] format
+              
