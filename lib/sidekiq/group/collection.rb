@@ -27,9 +27,9 @@ module Sidekiq
         Sidekiq::Logging.logger.info "Scheduling child job #{jid} for parent #{@cid}" if Sidekiq::Group.debug
 
         Sidekiq.redis do |r|
-          r.multi do
-            r.sadd("#{@cid}-jids", jid)
-            r.expire("#{@cid}-jids", CID_EXPIRE_TTL)
+          r.multi do |pipeline|
+            pipeline.sadd("#{@cid}-jids", jid)
+            pipeline.expire("#{@cid}-jids", CID_EXPIRE_TTL)
           end
         end
       end
@@ -81,18 +81,18 @@ module Sidekiq
 
       def callback_data
         Sidekiq.redis do |r|
-          r.multi do
-            r.hget(@cid, 'callback_class')
-            r.hget(@cid, 'callback_options')
+          r.multi do |pipeline|
+            pipeline.hget(@cid, 'callback_class')
+            pipeline.hget(@cid, 'callback_options')
           end
         end
       end
 
       def persist(attribute, value)
         Sidekiq.redis do |r|
-          r.multi do
-            r.hset(@cid, attribute, value)
-            r.expire(@cid, CID_EXPIRE_TTL)
+          r.multi do |pipeline|
+            pipeline.hset(@cid, attribute, value)
+            pipeline.expire(@cid, CID_EXPIRE_TTL)
           end
         end
       end
@@ -103,9 +103,9 @@ module Sidekiq
 
       def locked?
         Sidekiq.redis do |r|
-          r.multi do
-            r.getset("#{@cid}-finished", 1)
-            r.expire("#{@cid}-finished", LOCK_TTL)
+          r.multi do |pipeline|
+            pipeline.getset("#{@cid}-finished", 1)
+            pipeline.expire("#{@cid}-finished", LOCK_TTL)
           end.first
         end
       end

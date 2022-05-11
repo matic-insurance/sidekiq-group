@@ -1,4 +1,3 @@
-require 'sidekiq/logging'
 require 'sidekiq/group/version'
 require 'sidekiq/group/collection'
 require 'sidekiq/group/middleware'
@@ -32,7 +31,7 @@ module Sidekiq
     end
 
     def sidekiq_logger
-      Sidekiq::Logging.logger
+      Sidekiq.logger
     end
   end
 end
