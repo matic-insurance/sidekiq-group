@@ -36,7 +36,7 @@ RSpec.describe Sidekiq::Group do
     it { expect(collection).to have_received(:spawned_jobs!) }
 
     context 'when on_complete is not defined' do
-      let(:logger) { Sidekiq::Logging.logger }
+      let(:logger) { Sidekiq.logger }
 
       before do
         allow(logger).to receive(:warn)
