@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq-group (0.1.7)
+    sidekiq-group (0.1.8)
       activesupport (>= 5.0)
       sidekiq (>= 5.1, < 6.5)
 
