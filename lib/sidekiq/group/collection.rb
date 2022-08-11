@@ -8,6 +8,7 @@ module Sidekiq
       LOCK_TTL = 3600
 
       attr_reader :cid, :callback_class, :callback_options
+      alias_method :group_id, :cid
 
       def initialize(cid = nil)
         @cid = cid || SecureRandom.urlsafe_base64(16)
@@ -23,6 +24,10 @@ module Sidekiq
         persist('callback_options', value.to_json)
       end
 
+      def initialize_total_value
+        persist('total', 0)
+      end
+
       def add(jid)
         Sidekiq::Logging.logger.info "Scheduling child job #{jid} for parent #{@cid}" if Sidekiq::Group.debug
 
@@ -30,6 +35,7 @@ module Sidekiq
           r.multi do |pipeline|
             pipeline.sadd("#{@cid}-jids", jid)
             pipeline.expire("#{@cid}-jids", CID_EXPIRE_TTL)
+            pipeline.hincrby(@cid, 'total', 1)
           end
         end
       end
@@ -51,6 +57,18 @@ module Sidekiq
         Sidekiq::Group::Worker.perform_async(callback_class, options)
 
         cleanup_redis
+      end
+
+      def total
+        return unless spawned_all_jobs?
+
+        Sidekiq.redis { |r| r.hget(@cid, 'total').to_i }
+      end
+
+      def processed
+        return unless spawned_all_jobs?
+
+        total - pending
       end
 
       private
