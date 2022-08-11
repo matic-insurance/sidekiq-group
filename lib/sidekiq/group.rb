@@ -12,7 +12,7 @@ module Sidekiq
       def progress(group_id)
         group = Sidekiq::Group::Collection.new(group_id)
 
-        {total: group.total, processed: group.processed}
+        { total: group.total, processed: group.processed }
       end
     end
 

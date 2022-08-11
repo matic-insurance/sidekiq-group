@@ -15,6 +15,15 @@ RSpec.describe Sidekiq::Group::Collection do
     it { expect(collection.cid).to eq('EsFhHzzkEsFhHzzk') }
   end
 
+  describe '#initialize_total_value' do
+    before do
+      collection.initialize_total_value
+      collection.spawned_jobs!
+    end
+
+    it { expect(collection.total).to eq(0) }
+  end
+
   describe '#callback_class' do
     before { collection.callback_class = 'CallbackClass' }
 
@@ -50,6 +59,48 @@ RSpec.describe Sidekiq::Group::Collection do
     end
 
     it { expect(spawned_all_jobs).to be true }
+  end
+
+  describe '#total' do
+    context 'when scheduling is in progress' do
+      before do
+        collection.initialize_total_value
+        collection.add('test_id')
+      end
+
+      it { expect(collection.total).to be_nil }
+    end
+
+    context 'when scheduling is completed' do
+      before do
+        collection.initialize_total_value
+        collection.add('test_id')
+        collection.spawned_jobs!
+      end
+
+      it { expect(collection.total).to eq(1) }
+    end
+  end
+
+  describe '#processed' do
+    context 'when scheduling is in progress' do
+      before do
+        collection.initialize_total_value
+        collection.add('test_id')
+      end
+
+      it { expect(collection.processed).to be_nil }
+    end
+
+    context 'when scheduling is completed' do
+      before do
+        collection.initialize_total_value
+        collection.add('test_id')
+        collection.spawned_jobs!
+      end
+
+      it { expect(collection.processed).to eq(0) }
+    end
   end
 
   describe '#success' do

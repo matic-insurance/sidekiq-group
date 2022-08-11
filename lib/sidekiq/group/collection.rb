@@ -8,7 +8,7 @@ module Sidekiq
       LOCK_TTL = 3600
 
       attr_reader :cid, :callback_class, :callback_options
-      alias_method :group_id, :cid
+      alias group_id cid
 
       def initialize(cid = nil)
         @cid = cid || SecureRandom.urlsafe_base64(16)
