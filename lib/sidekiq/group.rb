@@ -8,6 +8,12 @@ module Sidekiq
 
     class << self
       attr_accessor :debug
+
+      def progress(group_id)
+        group = Sidekiq::Group::Collection.new(group_id)
+
+        { total: group.total, processed: group.processed }
+      end
     end
 
     def sidekiq_group(options = {})
@@ -16,6 +22,7 @@ module Sidekiq
       group = Sidekiq::Group::Collection.new
       group.callback_class = self.class.name
       group.callback_options = options
+      group.initialize_total_value
 
       Thread.current[:group_collection] = group
 

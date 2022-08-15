@@ -8,6 +8,7 @@ module Sidekiq
       LOCK_TTL = 3600
 
       attr_reader :cid, :callback_class, :callback_options
+      alias group_id cid
 
       def initialize(cid = nil)
         @cid = cid || SecureRandom.urlsafe_base64(16)
@@ -23,13 +24,18 @@ module Sidekiq
         persist('callback_options', value.to_json)
       end
 
+      def initialize_total_value
+        persist('total', 0)
+      end
+
       def add(jid)
-        Sidekiq::Logging.logger.info "Scheduling child job #{jid} for parent #{@cid}" if Sidekiq::Group.debug
+        Sidekiq.logger.info "Scheduling child job #{jid} for parent #{@cid}" if Sidekiq::Group.debug
 
         Sidekiq.redis do |r|
           r.multi do |pipeline|
             pipeline.sadd("#{@cid}-jids", jid)
             pipeline.expire("#{@cid}-jids", CID_EXPIRE_TTL)
+            pipeline.hincrby(@cid, 'total', 1)
           end
         end
       end
@@ -47,20 +53,32 @@ module Sidekiq
         callback_class, callback_options = callback_data
         options = JSON(callback_options)
 
-        Sidekiq::Logging.logger.info "Scheduling callback job #{callback_class} with #{options}" if Sidekiq::Group.debug
+        Sidekiq.logger.info "Scheduling callback job #{callback_class} with #{options}" if Sidekiq::Group.debug
         Sidekiq::Group::Worker.perform_async(callback_class, options)
 
         cleanup_redis
       end
 
+      def total
+        return unless spawned_all_jobs?
+
+        Sidekiq.redis { |r| r.hget(@cid, 'total').to_i }
+      end
+
+      def processed
+        return unless spawned_all_jobs?
+
+        total - pending
+      end
+
       private
 
       def remove_processed(jid)
-        Sidekiq::Logging.logger.info "Child job #{jid} completed" if Sidekiq::Group.debug
+        Sidekiq.logger.info "Child job #{jid} completed" if Sidekiq::Group.debug
 
         return if Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
 
-        Sidekiq::Logging.logger.info "Could not remove child job #{jid} from Redis" if Sidekiq::Group.debug
+        Sidekiq.logger.info "Could not remove child job #{jid} from Redis" if Sidekiq::Group.debug
         sleep 1
         Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
       end
@@ -70,7 +88,7 @@ module Sidekiq
       end
 
       def processed_all_jobs?
-        Sidekiq::Logging.logger.info "Pending jobs: #{pending}" if Sidekiq::Group.debug
+        Sidekiq.logger.info "Pending jobs: #{pending}" if Sidekiq::Group.debug
 
         spawned_all_jobs? && pending.zero?
       end

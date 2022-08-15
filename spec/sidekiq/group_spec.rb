@@ -15,7 +15,8 @@ end
 RSpec.describe Sidekiq::Group do
   let(:worker) { FakeGroupWorker.new }
   let(:collection) do
-    instance_double(Sidekiq::Group::Collection, add: true, spawned_jobs!: true,
+    instance_double(Sidekiq::Group::Collection, add: true, spawned_jobs!: true, initialize_total_value: true,
+                                                total: 1000, processed: 34,
                                                 'callback_class=' => nil, 'callback_options=' => nil)
   end
 
@@ -27,6 +28,12 @@ RSpec.describe Sidekiq::Group do
     expect(Sidekiq::Group::VERSION).not_to be nil
   end
 
+  describe '.progress' do
+    it 'returns total and processed' do
+      expect(described_class.progress('12345')).to eq(total: 1000, processed: 34)
+    end
+  end
+
   describe 'successful scenario' do
     before { worker.valid_perform }
 
@@ -34,6 +41,7 @@ RSpec.describe Sidekiq::Group do
     it { expect(collection).to have_received(:callback_class=).with('FakeGroupWorker') }
     it { expect(collection).to have_received(:add).with('54321') }
     it { expect(collection).to have_received(:spawned_jobs!) }
+    it { expect(collection).to have_received(:initialize_total_value) }
 
     context 'when on_complete is not defined' do
       let(:logger) { Sidekiq.logger }
