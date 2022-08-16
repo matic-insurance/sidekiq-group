@@ -49,6 +49,14 @@ RSpec.describe Sidekiq::Group::Collection do
     let(:pending) { Sidekiq.redis { |r| r.smembers("#{collection.cid}-jids") } }
 
     it { expect(pending).to include(worker_id) }
+
+    context 'when array of jids' do
+      before { collection.add([worker_id, worker_id2]) }
+
+      let(:worker_id2) { 'worker_id2' }
+
+      it { expect(pending).to include(worker_id, worker_id2) }
+    end
   end
 
   describe '#spawned_jobs!' do
@@ -79,6 +87,16 @@ RSpec.describe Sidekiq::Group::Collection do
       end
 
       it { expect(collection.total).to eq(1) }
+    end
+
+    context 'when array of jids' do
+      before do
+        collection.initialize_total_value
+        collection.add(%w[test_id test_id2])
+        collection.spawned_jobs!
+      end
+
+      it { expect(collection.total).to eq(2) }
     end
   end
 
