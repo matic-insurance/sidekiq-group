@@ -28,14 +28,16 @@ module Sidekiq
         persist('total', 0)
       end
 
-      def add(jid)
-        Sidekiq.logger.info "Scheduling child job #{jid} for parent #{@cid}" if Sidekiq::Group.debug
+      def add(jids)
+        jids = Array(jids)
+
+        Sidekiq.logger.info "Scheduling child job #{jids} for parent #{@cid}" if Sidekiq::Group.debug
 
         Sidekiq.redis do |r|
           r.multi do |pipeline|
-            pipeline.sadd("#{@cid}-jids", jid)
+            pipeline.sadd("#{@cid}-jids", jids)
             pipeline.expire("#{@cid}-jids", CID_EXPIRE_TTL)
-            pipeline.hincrby(@cid, 'total', 1)
+            pipeline.hincrby(@cid, 'total', jids.size)
           end
         end
       end
