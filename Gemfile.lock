@@ -1,31 +1,32 @@
 PATH
   remote: .
   specs:
-    sidekiq-group (0.1.9)
+    sidekiq-group (0.2.0)
       activesupport (>= 5.0)
-      sidekiq (>= 5.1, < 6.5)
+      sidekiq (>= 5.1, < 7.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (5.2.4.3)
+    activesupport (6.1.7.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (>= 0.7, < 2)
-      minitest (~> 5.1)
-      tzinfo (~> 1.1)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
     ast (2.4.1)
-    concurrent-ruby (1.1.7)
-    connection_pool (2.2.3)
+    concurrent-ruby (1.2.0)
+    connection_pool (2.3.0)
     diff-lcs (1.4.4)
     fakeredis (0.8.0)
       redis (~> 4.1)
-    i18n (1.8.7)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    minitest (5.14.3)
+    minitest (5.17.0)
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
-    rack (2.0.9)
+    rack (2.2.6.2)
     rainbow (3.0.0)
     rake (13.0.3)
     redis (4.2.5)
@@ -64,14 +65,14 @@ GEM
       rubocop (~> 1.0)
       rubocop-ast (>= 1.1.0)
     ruby-progressbar (1.11.0)
-    sidekiq (6.4.2)
+    sidekiq (6.5.1)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    thread_safe (0.3.6)
-    tzinfo (1.2.7)
-      thread_safe (~> 0.1)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
+    zeitwerk (2.6.7)
 
 PLATFORMS
   ruby
