@@ -12,6 +12,8 @@ module Sidekiq
 
       def initialize(cid = nil)
         @cid = cid || SecureRandom.urlsafe_base64(16)
+        @add_method = Redis.new.respond_to?(:sadd?) ? :sadd? : :sadd
+        @remove_method = @add_method == :sadd? ? :srem? : :srem
       end
 
       def callback_class=(value)
@@ -35,7 +37,7 @@ module Sidekiq
 
         Sidekiq.redis do |r|
           r.multi do |pipeline|
-            pipeline.sadd("#{@cid}-jids", jids)
+            pipeline.public_send(@add_method, "#{@cid}-jids", jids)
             pipeline.expire("#{@cid}-jids", CID_EXPIRE_TTL)
             pipeline.hincrby(@cid, 'total', jids.size)
           end
@@ -78,11 +80,11 @@ module Sidekiq
       def remove_processed(jid)
         Sidekiq.logger.info "Child job #{jid} completed" if Sidekiq::Group.debug
 
-        return if Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
+        return if Sidekiq.redis { |r| r.public_send(@remove_method, "#{@cid}-jids", jid) }
 
         Sidekiq.logger.info "Could not remove child job #{jid} from Redis" if Sidekiq::Group.debug
         sleep 1
-        Sidekiq.redis { |r| r.srem("#{@cid}-jids", jid) }
+        Sidekiq.redis { |r| r.public_send(@remove_method, "#{@cid}-jids", jid) }
       end
 
       def pending
