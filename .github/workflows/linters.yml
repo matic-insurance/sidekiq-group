@@ -20,4 +20,4 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
       - name: Run rubocop
-        run: bundle exec rubocop --parallel
+        run: bundle exec rubocop
