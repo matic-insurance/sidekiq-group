@@ -25,7 +25,7 @@ RSpec.describe Sidekiq::Group do
   end
 
   it 'has a version number' do
-    expect(Sidekiq::Group::VERSION).not_to be nil
+    expect(Sidekiq::Group::VERSION).not_to be_nil
   end
 
   describe '.progress' do
