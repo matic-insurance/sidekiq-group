@@ -13,8 +13,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        ruby: [ '3.0', '3.3' ]
+        ruby: [ '3.2', '3.3' ]
     services:
       redis:
         image: redis:7
